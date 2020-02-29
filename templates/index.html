@@ -1,0 +1,80 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en-US">-->
+<!--<head>-->
+<!--    <script type='text/javascript'>-->
+<!--      function preview_image(event){-->
+<!--        var reader = new FileReader();-->
+<!--        reader.onload = function()-->
+<!--        {-->
+<!--          var output = document.getElementById('output_image');-->
+<!--          output.src = reader.result;-->
+<!--        }-->
+<!--        reader.readAsDataURL(event.target.files[0]);-->
+<!--      }-->
+<!--    </script>-->
+<!--    <style>-->
+<!--      #wrapper-->
+<!--      {-->
+<!--       text-align:center;-->
+<!--       margin:0 auto;-->
+<!--       padding:0px;-->
+<!--       width:995px;-->
+<!--      }-->
+<!--      #output_image-->
+<!--      {-->
+<!--       max-width:75%;-->
+<!--      }-->
+<!--    </style>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--  <h1>Image Classifier</h1>-->
+<!--  <div>-->
+<!--    <form methods="POST" action = "/upload" enctype="multipart/form-data">-->
+<!--      <input type=file name="ImageFileUpload" accept=".png, .jpg, .jpeg" onchange="preview_image(event)"/>-->
+<!--      <image id="output_image" />-->
+      <!--<input type=file name=myfile>-->
+      <!--<input type = "file" name = "myfile" />-->
+<!--      <input type=submit value = upload>-->
+<!--    </form>-->
+<!--  </div>-->
+<!--</body>-->
+<!--<div>-->
+<!--  <button type="button" id="btn-predict" value="predict">predict</button>-->
+<!--</div>-->
+<!--</html>-->
+
+
+
+<html>
+  <head>
+    <script type='text/javascript'>
+      function preview_image(event){
+        var reader = new FileReader();
+        reader.onload = function()
+        {
+          var output = document.getElementById('output_image');
+          output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    </script>
+    <style>
+      #output_image
+      {
+        max-width: 50%;
+      }
+    </style>
+  </head>
+   <body>
+     <h1>Image Classifier </h1>
+      <form action = "/upload" method = "POST" enctype = "multipart/form-data">
+         <input type = "file" name = "file" accept=".png, .jpg, .jpeg" onchange="preview_image(event)">
+         <image id="output_image" />
+         <div>
+          <button type="submit" class="btn btn-primary btn-lg " id="btn-predict">Predict</button>
+         </div>
+      </form>
+      
+   </body>
+</html>
