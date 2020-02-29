@@ -13,6 +13,9 @@ from keras.preprocessing import image
 from keras.applications.imagenet_utils import preprocess_input, decode_predictions
 from keras.preprocessing.image import img_to_array,load_img
 from keras.models import load_model 
+from keras.models import model_from_json
+
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -20,15 +23,34 @@ warnings.filterwarnings('ignore')
 app = Flask(__name__)
 
 BUCKET = 'image-recognition2020'
+MODEL_BUCKET = 'model-bucket2020'
 UPLOAD_FOLDER = 'uploads'
 MODEL_PATH = 'model/resnet.h5'
 
-# model = ResNet50(weights='imagenet')
-# model.save(MODEL_FOLER+"/resnet.h5")
-# print("Saved model to disk")
 
-model = load_model(MODEL_PATH)
-#for threading purposes
+
+
+# model = ResNet50(weights='imagenet')
+# # Convert your existing model to JSON
+# saved_model = model.to_json()
+
+# # Write JSON object to S3 as "keras-model.json"
+# client = boto3.client('s3')
+# client.put_object(Body=saved_model,
+#                   Bucket=MODEL_BUCKET,
+#                   Key='keras-model.json')
+
+
+# Read the downloaded JSON file
+s3 = boto3.client('s3')
+s3.download_file(MODEL_BUCKET,"keras-model.json" , "keras-model.json")
+with open('keras-model.json', 'r') as model_file:
+   loaded_model = model_file.read()
+
+# Convert back to Keras model
+model = model_from_json(loaded_model)
+# model = load_model(MODEL_PATH)
+# #for threading purposes
 model._make_predict_function()
     
 def model_predict(img_path,model):
