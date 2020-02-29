@@ -6,7 +6,7 @@ import os
 
 #ml package
 import pandas as pd
-import numpy
+import numpy as np
 from keras.applications.resnet50 import ResNet50
 from keras.applications.vgg19 import preprocess_input
 from keras.preprocessing import image
@@ -21,20 +21,29 @@ app = Flask(__name__)
 
 BUCKET = 'image-recognition2020'
 UPLOAD_FOLDER = 'uploads'
-MODEL_FOLER = 'model'
+MODEL_PATH = 'model/resnet.h5'
 
-model = ResNet50(weights='imagenet')
-model.save(MODEL_FOLER+"/resnet.h5")
-print("Saved model to disk")
+# model = ResNet50(weights='imagenet')
+# model.save(MODEL_FOLER+"/resnet.h5")
+# print("Saved model to disk")
+
+model = load_model(MODEL_PATH)
+#for threading purposes
+model._make_predict_function()
     
+def model_predict(img_path,model):
+    img = load_img(img_path,target_size=(224,224))
+    # Preprocessing the image
+    x = image.img_to_array(img)
+    # x = np.true_divide(x, 255)
+    x = np.expand_dims(x, axis=0)
 
-def predict_image(image):
-    model = load_model('model/resnet.h5')
-    image_array = img_to_array(image)
-    image_prepared = preprocess_input(image_array)
-    yhat = model.predict(image_prepared)
-    label = decode_predictions(yhat)
-    return label[0][0]
+    # Be careful how your trained model deals with the input
+    # otherwise, it won't make correct prediction!
+    x = preprocess_input(x)
+
+    preds = model.predict(x)
+    return preds
     
 #the upload_file function takes a file name and upload that file to a specific bucket
 def upload_file(file_name,bucket):
@@ -77,10 +86,18 @@ def upload():
         f = request.files['file']
         client = boto3.client('s3')
         f.save(os.path.join(UPLOAD_FOLDER, f.filename))
-        response = upload_file(f"uploads/{f.filename}", BUCKET)
-        image = load_img(f"uploads/{f.filename}",target_size=(224,224))
-        result = predict_image(image)
-        return str(result)
+        file_path = f"uploads/{f.filename}"
+        response = upload_file(file_path, BUCKET)
+       
+        # Make prediction
+        preds = model_predict(file_path, model)
+
+        # Process your result for human
+        # pred_class = preds.argmax(axis=-1)            # Simple argmax
+        pred_class = decode_predictions(preds, top=1)   # ImageNet Decode
+        result = str(pred_class[0][0][1])               # Convert to string
+        return result
+    return None
 
 
 if __name__ == '__main__':
