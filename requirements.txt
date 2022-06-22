@@ -21,7 +21,7 @@ lazy-object-proxy==1.4.3
 Markdown==2.2.0
 MarkupSafe==1.1.1
 mccabe==0.6.1
-numpy==1.18.1
+numpy==1.22.0
 pandas==1.0.0
 protobuf==3.11.3
 pylint==2.4.4
